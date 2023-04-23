@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.shortcuts import reverse
@@ -19,6 +20,21 @@ class Trip(models.Model):
     drop_off_address = models.CharField(max_length=255)
     status = models.CharField(
         max_length=20, choices=STATUSES.choices(), default=STATUSES.REQUESTED.value)
+
+    driver = models.ForeignKey(  # new
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='trips_as_driver'
+    )
+    rider = models.ForeignKey(  # new
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='trips_as_rider'
+    )
 
     def __str__(self):
         return f'{self.id}'
