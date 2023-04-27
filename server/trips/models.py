@@ -9,7 +9,11 @@ from trips.constants import STATUSES
 
 
 class User(AbstractUser):
-    pass
+    photo = models.ImageField(upload_to='photos', null=True, blank=True)    # new
+    @property
+    def group(self):
+        groups = self.groups.all()
+        return groups[0].name if groups else None
 
 
 class Trip(models.Model):
@@ -35,11 +39,6 @@ class Trip(models.Model):
         on_delete=models.DO_NOTHING,
         related_name='trips_as_rider'
     )
-
-    @property
-    def group(self):
-        groups = self.groups.all()
-        return groups[0].name if groups else None
 
     def __str__(self):
         return f'{self.id}'
