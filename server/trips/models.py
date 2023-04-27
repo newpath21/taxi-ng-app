@@ -36,6 +36,11 @@ class Trip(models.Model):
         related_name='trips_as_rider'
     )
 
+    @property
+    def group(self):
+        groups = self.groups.all()
+        return groups[0].name if groups else None
+
     def __str__(self):
         return f'{self.id}'
 
