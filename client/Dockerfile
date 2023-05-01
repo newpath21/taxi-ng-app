@@ -1,7 +1,7 @@
 # client/Dockerfile
 
 # base image
-FROM node:19-alpine
+FROM node:18-alpine
 
 # install chrome
 RUN echo @edge http://nl.alpinelinux.org/alpine/latest-stable/community >> /etc/apk/repositories \
@@ -17,8 +17,10 @@ RUN echo @edge http://nl.alpinelinux.org/alpine/latest-stable/community >> /etc/
 
 RUN mkdir -p /usr/src/app
 
+# set working directory
 WORKDIR /usr/src/app
 
+# add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 # install app dependencies

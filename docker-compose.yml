@@ -9,13 +9,17 @@ services:
     container_name: taxi-server
     build:
       context: ./server
-    command: python manage.py runserver 0.0.0.0:8000
+    command: daphne --bind 0.0.0.0 --port 8000 taxi.asgi:application
     depends_on:
       - taxi-redis
-    environment:
-      - REDIS_URL=redis://taxi-redis:6379/0
+    env_file:
+      - ./server/.env
     ports:
       - 8001:8000
+    volumes:
+      - ./server:/usr/src/app
+      - media:/usr/src/app/media
+      - static:/usr/src/app/static
 
   taxi-database:
     container_name: taxi-database
@@ -27,6 +31,38 @@ services:
     volumes:
       - taxi-database:/var/lib/postgresql/data
 
+  taxi-client:
+    build:
+      context: ./client
+    command: ng serve --host 0.0.0.0
+    container_name: taxi-client
+    depends_on:
+      - taxi-server
+    environment:
+      - CHROME_BIN=chromium-browser
+    ports:
+      - 4201:4200
+    volumes:
+      - ./client:/usr/src/app
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: taxi-nginx
+    depends_on:
+      - taxi-server
+      - taxi-client
+    ports:
+      - 8080:80
+    restart: always
+    volumes:
+      - media:/usr/src/app/media
+      - static:/usr/src/app/static
+
+
+
 
 volumes:
   taxi-database:
+  media:
+  static:
